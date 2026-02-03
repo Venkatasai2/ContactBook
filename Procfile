@@ -1,2 +1,2 @@
-web: gunicorn ContactBook.wsgi
+gunicorn config.wsgi:application
 
