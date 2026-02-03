@@ -1,73 +1,101 @@
 <!DOCTYPE html>
-{%load static%}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="{%static 'ContactBook/styles/ContactBookHome.css'%}">
     <title>Contact Book</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'ContactBook/styles/ContactBookHome.css' %}">
 </head>
 <body>
-    <h1 class="text-center text-primary">Create your Contact List</h1>
-    <a class="btn btn-primary ms-5" href="{%url 'home'%}">Home</a>
-    <a class="btn btn-primary ms-3" href="{%url 'searchContact'%}">Search Contact</a>
-    <div class="inputForm mt-3">
-        <form method="post" action="{%url 'ContactBookHome'%}">
-            {%csrf_token%}
-           <div class="firstForm">
-            <label for="name" class="mt-2 ms-5">Enter Name:</label>
-            <input type="text" name="name" id="name" class="form-control mt-2 ms-2">
-            <label for="phone" class="form-label mt-2 ms-5">Enter Phone number:</label>
-            <input type="number" id="phone" name="phone" class="form-control mt-2 ms-2">
-           </div>
-           <div class="secondForm">
-            <label for="email" class="form-label mt-2 ms-5">Enter E-mail:</label>
-            <input type="email" id="email" name="email" class="form-control mt-2 ms-2">
-            <label for="address" class="form-label mt-2 ms-5">Enter address:</label>
-            <input type="text" id="address" name="address" class="form-control mt-2 ms-2">
-            <input type="submit" value="Add" class="btn btn-primary mt-2 mb-2 ms-5 formSubmit">
-           </div>
-        </form>
-    </div>
-    <h1 class="text-center text-primary mt-2 mb-2"><u>Your Contact-List</u></h1>
-    <div class="contactsTable">
-        <table class="table table-primary">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Mobile</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for account in Accounts %}
-                    <tr>
-                        <td>{{account.id}}</td>
-                        <td>{{account.name}}</td>
-                        <td>{{account.mobile}}</td>
-                        <td>{{account.email}}</td>
-                        <td>{{account.address}}</td>
-                        <td>
-                            <form action="updateContactForm" method="post">
-                                {%csrf_token%}
-                                <button class="btn btn-primary" name="to_update" value="{{account.id}}">Update</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="{%url 'deleteContact'%}" method="post">
-                                {%csrf_token%}
-                                <button class="btn btn-danger" name="to_delete" value="{{account.id}}">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}    
-            </tbody>
-        </table>
-    </div>
+
+<h1 class="text-center text-primary">Create your Contact List</h1>
+
+<div class="text-center mb-3">
+    <a class="btn btn-primary" href="{% url 'home' %}">Home</a>
+    <a class="btn btn-secondary ms-2" href="{% url 'searchContact' %}">Search Contact</a>
+</div>
+
+<div class="container">
+    <form method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" required>
+
+                <label class="mt-2">Mobile</label>
+                <input type="text" name="phone" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control">
+
+                <label class="mt-2">Address</label>
+                <input type="text" name="address" class="form-control">
+
+                <button type="submit" class="btn btn-primary mt-3">Add Contact</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<hr>
+
+<h2 class="text-center text-primary">Your Contact List</h2>
+
+<div class="container mt-3">
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for account in Accounts %}
+            <tr>
+                <td>{{ account.id }}</td>
+                <td>{{ account.name }}</td>
+                <td>{{ account.mobile }}</td>
+                <td>{{ account.email }}</td>
+                <td>{{ account.address }}</td>
+
+                <td>
+                    <form method="post" action="{% url 'updateContactForm' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-warning" name="to_update" value="{{ account.id }}">
+                            Update
+                        </button>
+                    </form>
+                </td>
+
+                <td>
+                    <form method="post" action="{% url 'deleteContact' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-sm btn-danger" name="to_delete" value="{{ account.id }}">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No contacts found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
